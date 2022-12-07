@@ -1,0 +1,6 @@
+[submodule "modules/BWindow"]
+	path = modules/BWindow
+	url = https://github.com/benedevrepo/BWindow
+[submodule "modules/BMath"]
+	path = modules/BMath
+	url = https://github.com/benedevrepo/BMath
