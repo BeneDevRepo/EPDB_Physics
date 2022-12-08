@@ -43,13 +43,17 @@ public:
 	inline TriangleConstraint(Triangle& target): target(target), area(calcArea(target)) { }
 	inline TriangleConstraint(Triangle& target, const float area): target(target), area(area) { }
 	virtual inline void solve(const float dt) {
-		// const float invMass[3]{ 1.f / 3.f, 1.f / 3.f, 1.f / 3.f };
-		// const float invMass[3]{ 1.f, 1.f, 1.f };
 		const float invMass[3]{ 0.f, 1.f, 1.f };
 
-		const bmath::vec2 gradient0 = dirLinePoint(target.p1(), target.p2(), target.p0());
-		const bmath::vec2 gradient1 = dirLinePoint(target.p2(), target.p0(), target.p1());
-		const bmath::vec2 gradient2 = dirLinePoint(target.p0(), target.p1(), target.p2());
+		const float currentArea = calcArea(target);
+
+		bmath::vec2 gradient0 = dirLinePoint(target.p1(), target.p2(), target.p0());
+		bmath::vec2 gradient1 = dirLinePoint(target.p2(), target.p0(), target.p1());
+		bmath::vec2 gradient2 = dirLinePoint(target.p0(), target.p1(), target.p2());
+
+		gradient0 *= currentArea * 2 / gradient0.mag();
+		gradient1 *= currentArea * 2 / gradient1.mag();
+		gradient2 *= currentArea * 2 / gradient2.mag();
 
 		float w = 0.f;
 		w += invMass[0] * gradient0.magSquared();
@@ -57,7 +61,7 @@ public:
 		w += invMass[2] * gradient2.magSquared();
 
 		const float compliance = 0.f;
-		const float c = (calcArea(target) - area); // constraint value
+		const float c = currentArea - area; // constraint value
 		const float alpha = compliance / (dt * dt);
 		const float lambda = -(2 * c) / (w + alpha);
 		// target.p0() += gradient0 * s;
